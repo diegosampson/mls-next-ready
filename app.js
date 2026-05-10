@@ -178,17 +178,18 @@ function renderAuth(){
     </div>
     ${isReg?`
       <div class="field"><label>FULL NAME</label><input id="reg-name" placeholder="Diego Sampson" maxlength="30"/></div>
-      <div class="field"><label>EMAIL</label><input id="reg-email" type="email" placeholder="you@email.com"/></div>
+      <div class="field"><label>EMAIL</label><input id="reg-email" type="email" placeholder="you@email.com" autocorrect="off" autocapitalize="none" spellcheck="false"/></div>
       <div class="field"><label>PASSWORD</label><input id="reg-pass" type="password" placeholder="Create password"/></div>
       <div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">ACCOUNT TYPE</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">${ACCOUNT_TYPES.map(t=>`<div class="pos-btn${S.registerType===t?" active":""}" onclick="S.registerType='${t}';render()">${t==="Player"?"⚽ Player":"🏆 Coach / Parent"}</div>`).join("")}</div>
       ${S.registerType==="Player"?`<div class="field"><label>AGE</label><input id="reg-age" type="number" placeholder="14" min="8" max="20"/></div><div class="field"><label>TEAM / CLUB</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div><div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">MY POSITION</div><div class="pos-grid">${POSITIONS.map(pos=>`<div class="pos-btn${S.registerPos===pos?" active":""}" onclick="S.registerPos='${pos}';render()">${pos}</div>`).join("")}</div>`:`<div class="field"><label>TEAM / CLUB (optional)</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div>`}
       <button class="btn-primary" onclick="doRegister()">CREATE MY PROFILE →</button>
     `:`
-      <div class="field"><label>EMAIL</label><input id="login-email" placeholder="your@email.com"/></div>
-      <div class="field"><label>PASSWORD</label><input id="login-pass" type="password" placeholder="Password"/></div>
+      <div class="field"><label>EMAIL</label><input id="login-email" type="email" placeholder="your@email.com" autocorrect="off" autocapitalize="none" spellcheck="false"/></div>
+      <div class="field"><label>PASSWORD</label><input id="login-pass" type="password" placeholder="Password" autocorrect="off" autocapitalize="none"/></div>
       <button class="btn-primary" style="margin-top:4px;" onclick="doLogin()">SIGN IN →</button>
     `}
+
   </div></div>`;
 }
 
@@ -391,15 +392,33 @@ function renderProfile(){
 // ── ACTIONS ──
 function switchAuth(m){S.authMode=m;render();}
 function doRegister(){
-  const name=document.getElementById("reg-name")?.value.trim(),email=document.getElementById("reg-email")?.value.trim().toLowerCase(),pass=document.getElementById("reg-pass")?.value,age=document.getElementById("reg-age")?.value,team=document.getElementById("reg-team")?.value.trim();
+  const name=document.getElementById("reg-name")?.value.trim();
+  const email=(document.getElementById("reg-email")?.value||"").trim().toLowerCase().replace(/\s+/g,"");
+  const pass=(document.getElementById("reg-pass")?.value||"").trim();
+  const age=document.getElementById("reg-age")?.value;
+  const team=(document.getElementById("reg-team")?.value||"").trim();
   if(!name||!email||!pass){showToast("Fill in all required fields","error");return;}
   if(S.players.find(p=>p.email===email)){showToast("Email already registered","error");return;}
-  const player={name,email,pass,age:parseInt(age)||14,team:team||"Nona Soccer",accountType:S.registerType,position:S.registerPos,xp:0,touches:0,weeklyTouches:0,streak:0,sessions:0,wfSessions:0,shotTouches:0,dailyWins:[],totalCalls:0,totalLOIs:0,totalContent:0,recentSessions:[]};
+  const player={name,email,pass,age:parseInt(age)||14,team:team||"",accountType:S.registerType,position:S.registerPos,xp:0,touches:0,weeklyTouches:0,streak:0,sessions:0,wfSessions:0,shotTouches:0,dailyWins:[],totalCalls:0,totalLOIs:0,totalContent:0,recentSessions:[]};
   S.players.push(player);save();S.currentPlayer=player;S.screen="app";S.tab="home";S.chatMessages=[];render();showToast("Welcome! 🚀");
 }
 function doLogin(){
-  const email=document.getElementById("login-email")?.value.trim().toLowerCase(),pass=document.getElementById("login-pass")?.value,player=S.players.find(p=>p.email===email&&p.pass===pass);
-  if(!player){showToast("Invalid email or password","error");return;}
+  const rawEmail=document.getElementById("login-email")?.value||"";
+  const rawPass=document.getElementById("login-pass")?.value||"";
+  const email=rawEmail.trim().toLowerCase().replace(/\s+/g,"");
+  const pass=rawPass.trim();
+  if(!email||!pass){showToast("Enter your email and password","error");return;}
+  // check current key + migrate old data if needed
+  const oldData=localStorage.getItem("mlsnr_v2_players");
+  if(oldData){
+    try{
+      const old=JSON.parse(oldData);
+      old.forEach(op=>{if(!S.players.find(p=>p.email===op.email)){S.players.push(op);}});
+      save();localStorage.removeItem("mlsnr_v2_players");
+    }catch(e){}
+  }
+  const player=S.players.find(p=>p.email===email&&p.pass===pass);
+  if(!player){showToast("Email or password not found","error");return;}
   S.currentPlayer=player;S.screen="app";S.tab="home";S.chatMessages=[];render();
 }
 function signOut(){S.currentPlayer=null;S.screen="login";S.chatMessages=[];render();}
