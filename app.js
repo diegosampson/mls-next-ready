@@ -171,14 +171,24 @@ function render(){const app=document.getElementById("app");if(!app)return;app.in
 function renderAuth(){
   const isReg=S.authMode==="register";
   return `<div class="auth-screen fade-up"><div class="auth-logo"><div class="sub">MLS NEXT</div><div class="main">READY</div><div class="tagline">ELITE SOCCER · PEAK PERFORMANCE</div></div>
-  <div class="auth-card"><div class="auth-tab"><button class="${!isReg?"active":""}" onclick="switchAuth('login')">SIGN IN</button><button class="${isReg?"active":""}" onclick="switchAuth('register')">JOIN</button></div>
-  ${isReg?`<div class="field"><label>FULL NAME</label><input id="reg-name" placeholder="Diego Sampson" maxlength="30"/></div><div class="field"><label>EMAIL</label><input id="reg-email" type="email" placeholder="you@email.com"/></div><div class="field"><label>PASSWORD</label><input id="reg-pass" type="password" placeholder="Create password"/></div>
-  <div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">ACCOUNT TYPE</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">${ACCOUNT_TYPES.map(t=>`<div class="pos-btn${S.registerType===t?" active":""}" onclick="S.registerType='${t}';render()">${t==="Player"?"⚽ Player":"🏆 Coach / Parent"}</div>`).join("")}</div>
-  ${S.registerType==="Player"?`<div class="field"><label>AGE</label><input id="reg-age" type="number" placeholder="14" min="8" max="20"/></div><div class="field"><label>TEAM</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div><div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">MY POSITION</div><div class="pos-grid">${POSITIONS.map(pos=>`<div class="pos-btn${S.registerPos===pos?" active":""}" onclick="S.registerPos='${pos}';render()">${pos}</div>`).join("")}</div>`:`<div class="field"><label>TEAM</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div>`}
-  <button class="btn-primary" onclick="doRegister()">CREATE ACCOUNT →</button>`
-  :`<div class="field"><label>EMAIL</label><input id="login-email" placeholder="your@email.com"/></div><div class="field"><label>PASSWORD</label><input id="login-pass" type="password" placeholder="Password"/></div><button class="btn-primary" style="margin-top:4px;" onclick="doLogin()">SIGN IN →</button>
-  `}
+  <div class="auth-card">
+    <div class="auth-tab">
+      <button class="${!isReg?"active":""}" onclick="switchAuth('login')">SIGN IN</button>
+      <button class="${isReg?"active":""}" onclick="switchAuth('register')">CREATE PROFILE</button>
+    </div>
+    ${isReg?`
+      <div class="field"><label>FULL NAME</label><input id="reg-name" placeholder="Diego Sampson" maxlength="30"/></div>
+      <div class="field"><label>EMAIL</label><input id="reg-email" type="email" placeholder="you@email.com"/></div>
+      <div class="field"><label>PASSWORD</label><input id="reg-pass" type="password" placeholder="Create password"/></div>
+      <div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">ACCOUNT TYPE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">${ACCOUNT_TYPES.map(t=>`<div class="pos-btn${S.registerType===t?" active":""}" onclick="S.registerType='${t}';render()">${t==="Player"?"⚽ Player":"🏆 Coach / Parent"}</div>`).join("")}</div>
+      ${S.registerType==="Player"?`<div class="field"><label>AGE</label><input id="reg-age" type="number" placeholder="14" min="8" max="20"/></div><div class="field"><label>TEAM / CLUB</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div><div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">MY POSITION</div><div class="pos-grid">${POSITIONS.map(pos=>`<div class="pos-btn${S.registerPos===pos?" active":""}" onclick="S.registerPos='${pos}';render()">${pos}</div>`).join("")}</div>`:`<div class="field"><label>TEAM / CLUB (optional)</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div>`}
+      <button class="btn-primary" onclick="doRegister()">CREATE MY PROFILE →</button>
+    `:`
+      <div class="field"><label>EMAIL</label><input id="login-email" placeholder="your@email.com"/></div>
+      <div class="field"><label>PASSWORD</label><input id="login-pass" type="password" placeholder="Password"/></div>
+      <button class="btn-primary" style="margin-top:4px;" onclick="doLogin()">SIGN IN →</button>
+    `}
   </div></div>`;
 }
 
