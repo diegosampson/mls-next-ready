@@ -169,7 +169,7 @@ function tickAnims(){
 function render(){const app=document.getElementById("app");if(!app)return;app.innerHTML=(S.screen==="login"||S.screen==="register")?renderAuth():renderMain();}
 
 function renderAuth(){
-  const isReg=S.authMode==="register",demos=S.players.slice(0,5);
+  const isReg=S.authMode==="register";
   return `<div class="auth-screen fade-up"><div class="auth-logo"><div class="sub">MLS NEXT</div><div class="main">READY</div><div class="tagline">ELITE SOCCER · PEAK PERFORMANCE</div></div>
   <div class="auth-card"><div class="auth-tab"><button class="${!isReg?"active":""}" onclick="switchAuth('login')">SIGN IN</button><button class="${isReg?"active":""}" onclick="switchAuth('register')">JOIN</button></div>
   ${isReg?`<div class="field"><label>FULL NAME</label><input id="reg-name" placeholder="Diego Sampson" maxlength="30"/></div><div class="field"><label>EMAIL</label><input id="reg-email" type="email" placeholder="you@email.com"/></div><div class="field"><label>PASSWORD</label><input id="reg-pass" type="password" placeholder="Create password"/></div>
@@ -178,7 +178,7 @@ function renderAuth(){
   ${S.registerType==="Player"?`<div class="field"><label>AGE</label><input id="reg-age" type="number" placeholder="14" min="8" max="20"/></div><div class="field"><label>TEAM</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div><div style="font-size:10px;color:var(--silver);letter-spacing:.1em;font-weight:700;margin-bottom:8px;">MY POSITION</div><div class="pos-grid">${POSITIONS.map(pos=>`<div class="pos-btn${S.registerPos===pos?" active":""}" onclick="S.registerPos='${pos}';render()">${pos}</div>`).join("")}</div>`:`<div class="field"><label>TEAM</label><input id="reg-team" placeholder="Nona Soccer U14" maxlength="30"/></div>`}
   <button class="btn-primary" onclick="doRegister()">CREATE ACCOUNT →</button>`
   :`<div class="field"><label>EMAIL</label><input id="login-email" placeholder="your@email.com"/></div><div class="field"><label>PASSWORD</label><input id="login-pass" type="password" placeholder="Password"/></div><button class="btn-primary" style="margin-top:4px;" onclick="doLogin()">SIGN IN →</button>
-  ${demos.length?`<div class="demo-players"><div class="demo-label">── QUICK LOGIN ──</div>${demos.map((pl,i)=>`<button class="demo-btn" onclick="quickLogin('${pl.email}')"><div class="avatar-sm" style="background:${avatarColor(i)}22;border:2px solid ${avatarColor(i)}50;color:${avatarColor(i)};">${pl.name.charAt(0)}</div><span>${pl.name}</span><span style="color:var(--silver);font-size:10px;margin-left:auto;">${pl.accountType==="Coach / Parent"?"🏆 Coach":pl.position} · ${pl.xp} XP</span></button>`).join("")}</div>`:""}`}
+  `}
   </div></div>`;
 }
 
@@ -392,7 +392,6 @@ function doLogin(){
   if(!player){showToast("Invalid email or password","error");return;}
   S.currentPlayer=player;S.screen="app";S.tab="home";S.chatMessages=[];render();
 }
-function quickLogin(email){const player=S.players.find(p=>p.email===email);if(!player)return;S.currentPlayer=player;S.screen="app";S.tab="home";S.chatMessages=[];render();}
 function signOut(){S.currentPlayer=null;S.screen="login";S.chatMessages=[];render();}
 function goTab(id){S.tab=id;if(id==="coach"&&S.chatMessages.length===0)initCoach();render();}
 function updatePos(pos){S.currentPlayer.position=pos;const idx=S.players.findIndex(p=>p.email===S.currentPlayer.email);if(idx>=0)S.players[idx].position=pos;save();S.chatMessages=[];render();}
@@ -444,16 +443,4 @@ function saveAdultLog(){
   save();S.logEntries={};S.expandedDrill=null;showToast(`SAVED · +${gainXP} XP 🏆`);S.tab="home";render();
 }
 
-// ── SEED DEMO DATA ──
-function seedDemo(){
-  if(S.players.length>0)return;
-  S.players=[
-    {name:"Diego Jr.",email:"diego@demo.com",pass:"demo",age:14,team:"Nona Soccer U14",accountType:"Player",position:"Winger",xp:820,touches:3140,weeklyTouches:2340,streak:5,sessions:12,wfSessions:6,shotTouches:200,dailyWins:[],totalCalls:0,totalLOIs:0,totalContent:0,recentSessions:[{name:"Ball Mastery",reps:100,sets:3,intensity:"Technical",wf:true,xp:450,touches:300,date:"May 8"},{name:"Shooting",reps:25,sets:4,intensity:"Match Speed",wf:true,xp:300,touches:100,date:"May 7"}]},
-    {name:"Diego Sampson",email:"sampson@demo.com",pass:"demo",age:40,team:"Nona Soccer U14",accountType:"Coach / Parent",position:"Winger",xp:430,touches:0,weeklyTouches:0,streak:3,sessions:8,wfSessions:0,shotTouches:0,totalCalls:24,totalLOIs:3,totalContent:12,dailyWins:[{text:"Closed Buchanan Office Center — 14,032 RSF",date:"Mar 27, 2026"},{text:"Submitted Exit 24 Dorado leasing proposal",date:"Apr 15, 2026"}],recentSessions:[{name:"Weight Training",reps:5,sets:4,intensity:"Hard",wf:false,xp:60,touches:0,date:"May 8"},{name:"Running",reps:30,sets:1,intensity:"Moderate",wf:false,xp:60,touches:0,date:"May 7"}]},
-    {name:"Marco R.",email:"marco@demo.com",pass:"demo",age:13,team:"Nona Soccer U14",accountType:"Player",position:"Striker",xp:1240,touches:4800,weeklyTouches:1800,streak:8,sessions:20,wfSessions:10,shotTouches:620,dailyWins:[],totalCalls:0,totalLOIs:0,totalContent:0,recentSessions:[{name:"Shooting",reps:30,sets:4,intensity:"Explosive",wf:true,xp:360,touches:120,date:"May 8"}]},
-    {name:"Tyler K.",email:"tyler@demo.com",pass:"demo",age:15,team:"Nona Soccer U14",accountType:"Player",position:"Midfielder",xp:430,touches:1600,weeklyTouches:900,streak:2,sessions:7,wfSessions:2,shotTouches:80,dailyWins:[],totalCalls:0,totalLOIs:0,totalContent:0,recentSessions:[]},
-  ];
-  save();
-}
-
-seedDemo();buildBg();render();requestAnimationFrame(tickAnims);
+buildBg();render();requestAnimationFrame(tickAnims);
